@@ -1,0 +1,22 @@
+{
+  "a1b2c3d_c1": [
+    {
+      "id": "test1",
+      "changeId": "a1b2c3d_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Test README contains all required deployment sections",
+      "testCode": "import pytest\nimport os\nimport re\n\ndef test_readme_contains_deployment_sections():\n    \"\"\"Test that README.md contains all required deployment sections.\"\"\"\n    # Get the path to the README.md file\n    readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')\n    \n    # Read the README.md file\n    with open(readme_path, 'r') as f:\n        readme_content = f.read()\n    \n    # Check for required sections\n    assert '## Deployment Instructions' in readme_content, \"Missing Deployment Instructions section\"\n    assert '### Prerequisites' in readme_content, \"Missing Prerequisites section\"\n    assert '### Production Deployment' in readme_content, \"Missing Production Deployment section\"\n    \n    # Check for specific requirements\n    assert re.search(r'Python\\s+3\\.\\d+', readme_content), \"Missing Python version requirement\"\n    assert re.search(r'PostgreSQL\\s+\\d+', readme_content), \"Missing PostgreSQL requirement\"\n    assert 'Redis' in readme_content, \"Missing Redis requirement\"\n    \n    # Check for deployment steps\n    assert 'environment variables' in readme_content.lower(), \"Missing environment variables step\"\n    assert 'migrate' in readme_content, \"Missing database migration step\"\n    assert 'collectstatic' in readme_content, \"Missing static files step\"\n    assert 'Gunicorn' in readme_content, \"Missing Gunicorn reference\"\n    assert 'Nginx' in readme_content, \"Missing Nginx reference\""
+    }
+  ],
+  "a1b2c3d_c2": [
+    {
+      "id": "test2",
+      "changeId": "a1b2c3d_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Test Nginx configuration contains required settings",
+      "testCode": "import pytest\nimport os\nimport re\n\ndef test_nginx_config_contains_required_settings():\n    \"\"\"Test that nginx.conf contains all required settings.\"\"\"\n    # Get the path to the nginx.conf file\n    nginx_path = os.path.join(os.path.dirname(__file__), '..', 'deployment', 'nginx.conf')\n    \n    # Read the nginx.conf file\n    with open(nginx_path, 'r') as f:\n        nginx_content = f.read()\n    \n    # Check for server block\n    assert 'server {' in nginx_content, \"Missing server block\"\n    \n    # Check for listen directive\n    assert re.search(r'listen\\s+\\d+', nginx_content), \"Missing listen directive\"\n    \n    # Check for server_name directive\n    assert re.search(r'server_name\\s+\\w+', nginx_content), \"Missing server_name directive\"\n    \n    # Check for static files location\n    assert re.search(r'location\\s+/static/', nginx_content), \"Missing static files location\"\n    \n    # Check for media files location\n    assert re.search(r'location\\s+/media/', nginx_content), \"Missing media files location\"\n    \n    # Check for proxy settings\n    assert 'proxy_pass' in nginx_content, \"Missing proxy_pass directive\"\n    assert 'proxy_set_header Host' in nginx_content, \"Missing Host header setting\"\n    assert 'proxy_set_header X-Real-IP' in nginx_content, \"Missing X-Real-IP header setting\""
+    }
+  ]
+}

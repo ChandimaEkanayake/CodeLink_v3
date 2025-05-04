@@ -1,0 +1,22 @@
+{
+  "a1b2c3d_c1": [
+    {
+      "id": "impact1",
+      "changeId": "a1b2c3d_c1",
+      "impactedFilePath": "deployment/deploy.sh",
+      "impactedCode": "#!/bin/bash\n# Deployment script for PyShop\n\n# Check if .env file exists\nif [ ! -f .env ]; then\n  echo \"Error: .env file not found. Please create one based on .env.example\"\n  exit 1\nfi\n\n# Load environment variables\nsource .env\n\n# Install dependencies\necho \"Installing dependencies...\"\npip install -r requirements.txt\n\n# Run migrations\necho \"Running database migrations...\"\npython manage.py migrate\n\n# Collect static files\necho \"Collecting static files...\"\npython manage.py collectstatic --noinput\n\n# Restart Gunicorn\necho \"Restarting Gunicorn...\"\nsystemctl restart gunicorn\n\n# Reload Nginx\necho \"Reloading Nginx configuration...\"\nnginx -t && systemctl reload nginx\n\necho \"Deployment completed successfully!\"",
+      "description": "The deployment script needs to be updated to align with the new deployment instructions in the README. Without these changes, the automated deployment process won't check for environment variables or properly set up the static files as described in the documentation.",
+      "severity": "medium"
+    }
+  ],
+  "q4r5s6t_c1": [
+    {
+      "id": "impact3",
+      "changeId": "q4r5s6t_c1",
+      "impactedFilePath": "pyshop/orders/models.py",
+      "impactedCode": "from django.db import models\nfrom django.conf import settings\nfrom products.models import Product\nfrom decimal import Decimal\n\nclass Order(models.Model):\n    user = models.ForeignKey(settings.AUTH_USER_MODEL,\n                             related_name='orders',\n                             on_delete=models.CASCADE,\n                             null=True, blank=True)\n    first_name = models.CharField(max_length=50)\n    last_name = models.CharField(max_length=50)\n    email = models.EmailField()\n    address = models.CharField(max_length=250)\n    postal_code = models.CharField(max_length=20)\n    city = models.CharField(max_length=100)\n    created = models.DateTimeField(auto_now_add=True)\n    updated = models.DateTimeField(auto_now=True)\n    paid = models.BooleanField(default=False)\n    \n    class Meta:\n        ordering = ('-created',)\n    \n    def __str__(self):\n        return f'Order {self.id}'\n    \n    def get_total_cost(self):\n        return sum(item.get_cost() for item in self.items.all())\n    \n    def mark_as_paid(self):\n        self.paid = True\n        self.save()\n\n\nclass OrderItem(models.Model):\n    order = models.ForeignKey(Order,\n                             related_name='items',\n                             on_delete=models.CASCADE)\n    product = models.ForeignKey(Product,\n                               related_name='order_items',\n                               on_delete=models.CASCADE)\n    price = models.DecimalField(max_digits=10, decimal_places=2)\n    quantity = models.PositiveIntegerField(default=1)\n    \n    def __str__(self):\n        return str(self.id)\n    \n    def get_cost(self):\n        return self.price * self.quantity",
+      "description": "The Order model needs to be updated to work with the new payment processing system. The current model only has a simple 'paid' flag, but now needs to track payment status and potentially store payment IDs for reference.",
+      "severity": "high"
+    }
+  ]
+}

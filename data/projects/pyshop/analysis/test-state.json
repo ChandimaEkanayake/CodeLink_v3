@@ -1,0 +1,25 @@
+{
+  "branches": {
+    "main": {
+      "status": "not_tested",
+      "commits": {
+        "mock-commit-1": {
+          "status": "not_tested",
+          "changes": {
+            "mock-change-1": {
+              "status": "not_tested"
+            }
+          }
+        },
+        "a1b2c3d": {
+          "status": "passed",
+          "changes": {
+            "a1b2c3d_c1": {
+              "status": "passed"
+            }
+          }
+        }
+      }
+    }
+  }
+}

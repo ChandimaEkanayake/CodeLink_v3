@@ -1,0 +1,43 @@
+{
+  "branches": {
+    "main": {
+      "status": "not_tested",
+      "commits": {
+        "a1b2c3d": {
+          "status": "not_tested",
+          "changes": {
+            "a1b2c3d_c1": { "status": "not_tested" },
+            "a1b2c3d_c2": { "status": "not_tested" }
+          }
+        },
+        "e4f5g6h": {
+          "status": "not_tested",
+          "changes": {
+            "e4f5g6h_c1": { "status": "not_tested" },
+            "e4f5g6h_c2": { "status": "not_tested" }
+          }
+        }
+      }
+    },
+    "feature/payment-gateway": {
+      "status": "not_tested",
+      "commits": {
+        "m1n2o3p": {
+          "status": "not_tested",
+          "changes": {
+            "m1n2o3p_c1": { "status": "not_tested" },
+            "m1n2o3p_c2": { "status": "not_tested" },
+            "m1n2o3p_c3": { "status": "not_tested" }
+          }
+        },
+        "q4r5s6t": {
+          "status": "not_tested",
+          "changes": {
+            "q4r5s6t_c1": { "status": "not_tested" },
+            "q4r5s6t_c2": { "status": "not_tested" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "branches": {
     "main": {
-      "status": "failed",
+      "status": "not_tested",
       "commits": {
         "mock-commit-1": {
           "status": "not_tested",
@@ -12,10 +12,10 @@
           }
         },
         "a1b2c3d": {
-          "status": "failed",
+          "status": "passed",
           "changes": {
             "a1b2c3d_c1": {
-              "status": "failed"
+              "status": "passed"
             }
           }
         }

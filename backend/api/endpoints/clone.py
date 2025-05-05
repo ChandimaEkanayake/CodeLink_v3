@@ -1,51 +1,57 @@
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+import re
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, HttpUrl
+from typing import Optional
+from pathlib import Path
 
-from services.git_clone import clone_repo, is_project_cloned
+from services.git_clone import clone_repo, extract_project_name_from_url, is_project_existing
+from core.logging import server_log, server_error
 
 router = APIRouter()
 
 
-class CloneRepoRequest(BaseModel):
-    repoUrl: str
+class CloneRequest(BaseModel):
+    url: HttpUrl
+    projectName: Optional[str] = None  # override name if project exists
 
 
-@router.post("/projects/clone", tags=["Projects"])
-async def clone_repository(request: CloneRepoRequest):
-    """
-    Clone a Git repository into data/projects/{name}/repo.
-    """
+@router.post("/projects/clone")
+async def clone_project(request: CloneRequest):
     try:
-        project_name = clone_repo(request.repoUrl)
+        repo_url = str(request.url)
+        override_name = request.projectName
+
+        # Determine project name
+        project_name = override_name or extract_project_name_from_url(repo_url)
+
+        if is_project_existing(project_name):
+            if not override_name:
+                return {
+                    "status": "exists",
+                    "message": f"Project '{project_name}' already exists.",
+                    "suggestRename": True
+                }
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Project '{project_name}' already exists. Please choose a new name.",
+                )
+
+        # Attempt to clone
+        success, resolved_name, error_msg = clone_repo(repo_url, project_name)
+
+        if not success:
+            raise HTTPException(status_code=500, detail=error_msg or "Failed to clone repository.")
+
         return {
-            "success": True,
-            "message": f"Repository cloned as '{project_name}'.",
-            "project": project_name,
+            "status": "success",
+            "project": resolved_name,
+            "message": f"Repository cloned successfully into 'data/projects/{resolved_name}/repo'"
         }
 
-    except FileExistsError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except RuntimeError as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    except Exception:
-        raise HTTPException(
-            status_code=500,
-            detail="Unexpected error occurred during cloning.",
-        )
-
-
-@router.get("/projects/status", tags=["Projects"])
-async def check_project_status(
-    repoUrl: str = Query(..., description="Full Git repository URL")
-):
-    """
-    Check whether a given repo URL has already been cloned.
-    Returns { cloned: boolean }.
-    """
-    try:
-        cloned = is_project_cloned(repoUrl)
-        return {"cloned": cloned}
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail="Could not determine clone status."
-        )
+        server_error(f"[clone_project] Unexpected: {str(e)}")
+        raise HTTPException(status_code=500, detail="Unexpected server error.")
+

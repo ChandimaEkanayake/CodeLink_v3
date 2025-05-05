@@ -24,6 +24,7 @@ import { getCurrentProject, setCurrentProject, getAvailableProjects } from "@/li
 import { CSSProperties } from "react"
 import { toast } from "sonner"
 import { cloneRepository , checkRepoCloned} from "@/lib/api"
+import { CloneProjectModal } from "@/components/clone-project-modal"
 
 interface HeaderProps {
   currentProject?: string
@@ -85,6 +86,9 @@ export function Header({ currentProject: propCurrentProject }: HeaderProps) {
   const [isCloneDialogOpen, setIsCloneDialogOpen] = useState(false)
   const [repoUrl, setRepoUrl] = useState("")
 
+  // Clone
+  const [isCloneModalOpen, setIsCloneModalOpen] = useState(false)
+  
   // Project list
   const [availableProjects, setAvailableProjects] = useState<string[]>([])
   const [currentProject, setCurrentProjectState] = useState(
@@ -114,33 +118,6 @@ export function Header({ currentProject: propCurrentProject }: HeaderProps) {
   /**
    * Initiates git-clone via API, shows toasts, refreshes project list on success.
    */
-  const handleCloneProject = async () => {
-    if (!repoUrl.trim()) {
-      toast.error("Please enter a valid repository URL.")
-      return
-    }
-
-    toast.loading("Cloning repository...")
-    try {
-      const response = await cloneRepository(repoUrl)
-      toast.dismiss()
-
-      if (response.success) {
-        toast.success("Repository cloned successfully!")
-        setIsCloneDialogOpen(false)
-        setRepoUrl("")
-
-        // 🔄 Refresh the available projects list
-        const projects = await getAvailableProjects()
-        setAvailableProjects(projects)
-      } else {
-        toast.error(response.message || "Failed to clone repository.")
-      }
-    } catch (error: any) {
-      toast.dismiss()
-      toast.error(error?.message || "Unexpected error while cloning.")
-    }
-  }
 
   // ----------------------------------------------------------------------------
   // Project switcher
@@ -186,7 +163,7 @@ export function Header({ currentProject: propCurrentProject }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuItem onClick={() => setIsCloneDialogOpen(true)}>
+            <DropdownMenuItem onClick={() => setIsCloneModalOpen(true)}>
               <FileCode className="mr-2 h-4 w-4" />
               <span>Clone Project</span>
             </DropdownMenuItem>
@@ -269,51 +246,8 @@ export function Header({ currentProject: propCurrentProject }: HeaderProps) {
         </button>
       </div>
 
-       {/* — Clone Project Dialog */}
-       <Dialog open={isCloneDialogOpen} onOpenChange={setIsCloneDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Clone Repository</DialogTitle>
-            <DialogDescription>
-              Enter the repository URL to clone a new project.
-              {isCheckingStatus && (
-                <span className="ml-2 text-xs text-neutral-400 animate-pulse">
-                  Checking status…
-                </span>
-              )}
-              {!isCheckingStatus && repoUrl && isCloned && (
-                <span className="ml-2 text-xs text-yellow-500">
-                  Already cloned
-                </span>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="repo-url">Repository URL</Label>
-              <Input
-                id="repo-url"
-                placeholder="https://github.com/username/repo.git"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCloneDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCloneProject}
-              disabled={!repoUrl.trim() || isCheckingStatus || isCloned}
-            >
-              {isCloned ? "Cloned" : "Clone"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+     {/* Clone Project Modal */}
+      <CloneProjectModal open={isCloneModalOpen} onOpenChange={setIsCloneModalOpen} />
     </header>
   )
 }

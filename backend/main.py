@@ -1,5 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from fastapi import Request
+from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
+from fastapi.encoders import jsonable_encoder
 
 # Import all route modules
 from api.endpoints import (
@@ -17,6 +22,24 @@ app = FastAPI(
     description="API for CodeLink code review and insight system",
     version="1.0.0"
 )
+
+@app.exception_handler(RequestValidationError)
+async def custom_validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Check for specific URL field error (optional)
+    errors = exc.errors()
+    if errors and isinstance(errors, list):
+        for error in errors:
+            if "url" in error.get("loc", []):
+                return JSONResponse(
+                    status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+                    content={"detail": "value is not a valid url"},
+                )
+
+    # Default fallback: return simplified message
+    return JSONResponse(
+        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": "invalid input"},
+    )
 
 # CORS middleware — update allowed origins in production
 app.add_middleware(

@@ -7,18 +7,46 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8
 const FETCH_TIMEOUT = 5000
 
 /**
- * Clone project -> .git
+ * Clone a Git repository via the backend (FastAPI)
  */
-export async function cloneRepository(repoUrl: string) {
-  const res = await fetch("/api/projects/clone", {
+export async function cloneRepository(url: string, projectName?: string) {
+  const response = await fetch("http://localhost:8000/api/projects/clone", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ repoUrl }),
+    body: JSON.stringify({ url, projectName }),
   })
 
-  if (!res.ok) throw new Error("Failed to clone repository")
+  const data = await response.json()
 
-  return res.json()
+  if (!response.ok) {
+    throw new Error(data.detail || "Clone failed")
+  }
+
+  return data
+}
+
+/**
+ * Check if a repository is already cloned
+ */
+export async function checkRepositoryStatus(url: string): Promise<{ isCloned: boolean }> {
+  // In a real app, this would be an API call
+  // Example: return fetch('/api/projects/status', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ url })
+  // }).then(res => res.json())
+
+  // For now, simulate a check with a delay
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Simulate that pyshop is already cloned
+      const urlParts = url.split("/")
+      const repoName = urlParts[urlParts.length - 1].replace(".git", "")
+      const isCloned = repoName.toLowerCase() === "pyshop"
+
+      resolve({ isCloned })
+    }, 700) // Simulate network delay
+  })
 }
 
 /*

@@ -208,28 +208,10 @@ export function Header({ currentProject: propCurrentProject }: HeaderProps) {
       {/* Middle section - draggable area with project selector */}
       <div
         className="flex-1 flex items-center justify-center cursor-move"
+        style={{ WebkitAppRegion: "drag" } as React.CSSProperties} // For Electron apps
       >
-        <div className="px-4 py-0.5 bg-white/5 border border-white/10 rounded-md text-xs font-medium w-[50%] text-center flex items-center justify-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 text-white hover:bg-white/10 text-xs">
-                {currentProject}
-                <ChevronDown className="ml-1 h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-40">
-              {availableProjects.map((project) => (
-                <DropdownMenuItem
-                  key={project}
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={() => handleProjectChange(project)}
-                >
-                  {project === currentProject && <CheckCircle className="h-4 w-4 text-green-500" />}
-                  <span>{project}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="px-4 py-0.5 bg-white/5 border border-white/10 rounded-md text-xs font-medium w-[50%] text-center">
+          {currentProject}
         </div>
       </div>
 

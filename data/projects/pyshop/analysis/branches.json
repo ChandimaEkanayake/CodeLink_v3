@@ -11,14 +11,21 @@
       },
       {
         "id": "e4f5g6h",
-        "message": "Fix product search pagination bug",
+        "message": "Fix product search pagination bug in views.py",
         "author": "Alex Chen",
         "date": "2023-11-14T09:45:00Z",
         "avatar": "/placeholder.svg?height=40&width=40"
       },
       {
+        "id": "z1y2x3w",
+        "message": "Refactor cart logic to improve session persistence",
+        "author": "Nina Patel",
+        "date": "2023-11-13T17:10:00Z",
+        "avatar": "/placeholder.svg?height=40&width=40"
+      },
+      {
         "id": "i7j8k9l",
-        "message": "Initial commit with project structure",
+        "message": "Initial commit with Django project structure and product app",
         "author": "Maria Garcia",
         "date": "2023-11-10T16:20:00Z",
         "avatar": "/placeholder.svg?height=40&width=40"
@@ -30,21 +37,21 @@
     "commits": [
       {
         "id": "m1n2o3p",
-        "message": "Add Stripe webhook handler",
+        "message": "Add Stripe webhook handler and secure signature validation",
         "author": "James Wilson",
         "date": "2023-11-18T11:25:00Z",
         "avatar": "/placeholder.svg?height=40&width=40"
       },
       {
         "id": "q4r5s6t",
-        "message": "Implement Stripe payment processing",
+        "message": "Implement Stripe payment processing API and frontend UI",
         "author": "Sophia Lee",
         "date": "2023-11-17T15:40:00Z",
         "avatar": "/placeholder.svg?height=40&width=40"
       },
       {
         "id": "u7v8w9x",
-        "message": "Create payment models and database schema",
+        "message": "Create payment models, migrations, and integrate with order flow",
         "author": "James Wilson",
         "date": "2023-11-16T10:15:00Z",
         "avatar": "/placeholder.svg?height=40&width=40"

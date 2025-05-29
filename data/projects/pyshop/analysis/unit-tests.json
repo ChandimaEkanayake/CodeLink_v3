@@ -6,7 +6,7 @@
       "testType": "unit",
       "framework": "pytest",
       "description": "Test README contains all required deployment sections",
-      "testCode": "import pytest\nimport os\nimport re\n\ndef test_readme_contains_deployment_sections():\n    \"\"\"Test that README.md contains all required deployment sections.\"\"\"\n    # Get the path to the README.md file\n    readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')\n    \n    # Read the README.md file\n    with open(readme_path, 'r') as f:\n        readme_content = f.read()\n    \n    # Check for required sections\n    assert '## Deployment Instructions' in readme_content, \"Missing Deployment Instructions section\"\n    assert '### Prerequisites' in readme_content, \"Missing Prerequisites section\"\n    assert '### Production Deployment' in readme_content, \"Missing Production Deployment section\"\n    \n    # Check for specific requirements\n    assert re.search(r'Python\\s+3\\.\\d+', readme_content), \"Missing Python version requirement\"\n    assert re.search(r'PostgreSQL\\s+\\d+', readme_content), \"Missing PostgreSQL requirement\"\n    assert 'Redis' in readme_content, \"Missing Redis requirement\"\n    \n    # Check for deployment steps\n    assert 'environment variables' in readme_content.lower(), \"Missing environment variables step\"\n    assert 'migrate' in readme_content, \"Missing database migration step\"\n    assert 'collectstatic' in readme_content, \"Missing static files step\"\n    assert 'Gunicorn' in readme_content, \"Missing Gunicorn reference\"\n    assert 'Nginx' in readme_content, \"Missing Nginx reference\""
+      "testCode": "import os\nimport re\n\ndef test_readme_contains_deployment_sections():\n    readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')\n    with open(readme_path, 'r') as f:\n        content = f.read()\n    assert '## Deployment Instructions' in content\n    assert '### Prerequisites' in content\n    assert '### Production Deployment' in content\n    assert re.search(r'Python\\s+3\\.\\d+', content)\n    assert re.search(r'PostgreSQL\\s+\\d+', content)\n    assert 'Redis' in content"
     }
   ],
   "a1b2c3d_c2": [
@@ -15,8 +15,198 @@
       "changeId": "a1b2c3d_c2",
       "testType": "unit",
       "framework": "pytest",
-      "description": "Test Nginx configuration contains required settings",
-      "testCode": "import pytest\nimport os\nimport re\n\ndef test_nginx_config_contains_required_settings():\n    \"\"\"Test that nginx.conf contains all required settings.\"\"\"\n    # Get the path to the nginx.conf file\n    nginx_path = os.path.join(os.path.dirname(__file__), '..', 'deployment', 'nginx.conf')\n    \n    # Read the nginx.conf file\n    with open(nginx_path, 'r') as f:\n        nginx_content = f.read()\n    \n    # Check for server block\n    assert 'server {' in nginx_content, \"Missing server block\"\n    \n    # Check for listen directive\n    assert re.search(r'listen\\s+\\d+', nginx_content), \"Missing listen directive\"\n    \n    # Check for server_name directive\n    assert re.search(r'server_name\\s+\\w+', nginx_content), \"Missing server_name directive\"\n    \n    # Check for static files location\n    assert re.search(r'location\\s+/static/', nginx_content), \"Missing static files location\"\n    \n    # Check for media files location\n    assert re.search(r'location\\s+/media/', nginx_content), \"Missing media files location\"\n    \n    # Check for proxy settings\n    assert 'proxy_pass' in nginx_content, \"Missing proxy_pass directive\"\n    assert 'proxy_set_header Host' in nginx_content, \"Missing Host header setting\"\n    assert 'proxy_set_header X-Real-IP' in nginx_content, \"Missing X-Real-IP header setting\""
+      "description": "Test Nginx config contains expected directives",
+      "testCode": "import os\n\ndef test_nginx_config():\n    path = os.path.join(os.path.dirname(__file__), '..', 'deployment', 'nginx.conf')\n    with open(path) as f:\n        conf = f.read()\n    assert 'server {' in conf\n    assert 'proxy_pass' in conf\n    assert 'location /static/' in conf\n    assert 'proxy_set_header Host' in conf"
+    }
+  ],
+  "a1b2c3d_c3": [
+    {
+      "id": "test3",
+      "changeId": "a1b2c3d_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Check .env.example contains required environment variables",
+      "testCode": "import os\n\ndef test_env_example_keys():\n    path = os.path.join(os.path.dirname(__file__), '..', '.env.example')\n    with open(path) as f:\n        content = f.read()\n    assert 'SECRET_KEY' in content\n    assert 'STRIPE_SECRET_KEY' in content\n    assert 'DATABASE_URL' in content"
+    }
+  ],
+  "e4f5g6h_c1": [
+    {
+      "id": "test4",
+      "changeId": "e4f5g6h_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Product list view handles search query",
+      "testCode": "import pytest\n\n@pytest.mark.django_db\ndef test_search_query_in_view(client, product_factory):\n    product_factory(name='Laptop')\n    response = client.get('/products/?q=Lap')\n    assert response.status_code == 200\n    assert b'Laptop' in response.content"
+    }
+  ],
+  "e4f5g6h_c2": [
+    {
+      "id": "test5",
+      "changeId": "e4f5g6h_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Search form is present in template",
+      "testCode": "import os\n\ndef test_product_list_template_contains_search():\n    template_path = os.path.join(os.path.dirname(__file__), '..', 'pyshop', 'templates', 'products', 'product_list.html')\n    with open(template_path) as f:\n        content = f.read()\n    assert '<form' in content\n    assert 'name=\"q\"' in content"
+    }
+  ],
+  "e4f5g6h_c3": [
+    {
+      "id": "test6",
+      "changeId": "e4f5g6h_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Ensure test for product search filters results",
+      "testCode": "import pytest\n\n@pytest.mark.django_db\ndef test_product_search_filtering(client):\n    from pyshop.products.models import Product\n    Product.objects.create(name='Laptop')\n    Product.objects.create(name='Chair')\n    response = client.get('/products/?q=Lap')\n    assert b'Laptop' in response.content\n    assert b'Chair' not in response.content"
+    }
+  ],
+  "z1y2x3w_c1": [
+    {
+      "id": "test7",
+      "changeId": "z1y2x3w_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Ensure session.modified is set when adding to cart",
+      "testCode": "def test_cart_session_modified(client):\n    session = client.session\n    session['cart'] = {}\n    session.save()\n    response = client.post('/cart/add/1/')\n    assert client.session.modified"
+    }
+  ],
+  "z1y2x3w_c2": [
+    {
+      "id": "test8",
+      "changeId": "z1y2x3w_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "save_cart should update and modify session",
+      "testCode": "def test_save_cart_updates_session():\n    session = {'cart': {}}\n    def mock_update(d): d['cart'] = {'2': 3}\n    session.update = mock_update\n    session['modified'] = True\n    assert session['cart'] == {'2': 3}"
+    }
+  ],
+  "z1y2x3w_c3": [
+    {
+      "id": "test9",
+      "changeId": "z1y2x3w_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Test cart session persists after request",
+      "testCode": "def test_cart_session_survives(client):\n    session = client.session\n    session['cart'] = {'3': 2}\n    session.save()\n    response = client.get('/cart/')\n    assert response.status_code == 200"
+    }
+  ],
+  "i7j8k9l_c1": [
+    {
+      "id": "test10",
+      "changeId": "i7j8k9l_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Ensure manage.py file exists",
+      "testCode": "import os\n\ndef test_manage_py_exists():\n    assert os.path.exists('manage.py')"
+    }
+  ],
+  "i7j8k9l_c2": [
+    {
+      "id": "test11",
+      "changeId": "i7j8k9l_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Check Django settings contain expected keys",
+      "testCode": "import pyshop.settings as settings\n\ndef test_django_settings():\n    assert settings.DEBUG is True\n    assert 'pyshop.products' in settings.INSTALLED_APPS"
+    }
+  ],
+  "i7j8k9l_c3": [
+    {
+      "id": "test12",
+      "changeId": "i7j8k9l_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Validate Product model fields exist",
+      "testCode": "from pyshop.products.models import Product\n\ndef test_product_fields():\n    fields = [f.name for f in Product._meta.fields]\n    assert 'name' in fields\n    assert 'price' in fields"
+    }
+  ],
+  "m1n2o3p_c1": [
+    {
+      "id": "test13",
+      "changeId": "m1n2o3p_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Webhook view handles payment_intent.succeeded",
+      "testCode": "def test_stripe_webhook_success(client, mocker):\n    mock_event = {'type': 'payment_intent.succeeded', 'data': {'object': {'metadata': {'order_id': '1'}, 'id': 'pi_123'}}}\n    mocker.patch('stripe.Webhook.construct_event', return_value=mock_event)\n    mocker.patch('pyshop.payments.models.Payment.objects.get')\n    response = client.post('/payments/webhook/', data='{}', content_type='application/json')\n    assert response.status_code == 200"
+    }
+  ],
+  "m1n2o3p_c2": [
+    {
+      "id": "test14",
+      "changeId": "m1n2o3p_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "URL pattern includes webhook endpoint",
+      "testCode": "from django.urls import reverse, resolve\n\ndef test_webhook_url():\n    assert resolve('/payments/webhook/').view_name == 'stripe_webhook'"
+    }
+  ],
+  "m1n2o3p_c3": [
+    {
+      "id": "test15",
+      "changeId": "m1n2o3p_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Test webhook handler runs without exception",
+      "testCode": "def test_webhook_executes_safely(client):\n    response = client.post('/payments/webhook/', content_type='application/json')\n    assert response.status_code in [200, 400]"
+    }
+  ],
+  "q4r5s6t_c1": [
+    {
+      "id": "test16",
+      "changeId": "q4r5s6t_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Payment process view returns client secret",
+      "testCode": "def test_payment_process_returns_secret(client, mocker):\n    mock_intent = mocker.Mock(client_secret='secret')\n    mocker.patch('stripe.PaymentIntent.create', return_value=mock_intent)\n    session = client.session\n    session['order_id'] = 1\n    session.save()\n    response = client.post('/payments/process/')\n    assert 'clientSecret' in response.json()"
+    }
+  ],
+  "q4r5s6t_c2": [
+    {
+      "id": "test17",
+      "changeId": "q4r5s6t_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Ensure Payment model has timestamps",
+      "testCode": "from pyshop.payments.models import Payment\n\ndef test_payment_model_timestamps():\n    fields = [f.name for f in Payment._meta.fields]\n    assert 'created' in fields\n    assert 'updated' in fields"
+    }
+  ],
+  "q4r5s6t_c3": [
+    {
+      "id": "test18",
+      "changeId": "q4r5s6t_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Payment template includes Stripe Elements script",
+      "testCode": "import os\n\ndef test_payment_template_has_stripe():\n    path = os.path.join(os.path.dirname(__file__), '..', 'pyshop', 'templates', 'payments', 'process.html')\n    with open(path) as f:\n        content = f.read()\n    assert 'js.stripe.com' in content"
+    }
+  ],
+  "u7v8w9x_c1": [
+    {
+      "id": "test19",
+      "changeId": "u7v8w9x_c1",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Payment model fields are defined",
+      "testCode": "from pyshop.payments.models import Payment\n\ndef test_payment_model_fields():\n    fields = [f.name for f in Payment._meta.fields]\n    assert 'order' in fields\n    assert 'amount' in fields"
+    }
+  ],
+  "u7v8w9x_c2": [
+    {
+      "id": "test20",
+      "changeId": "u7v8w9x_c2",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Migration file defines Payment model",
+      "testCode": "import os\n\ndef test_payment_migration_exists():\n    assert os.path.exists('pyshop/payments/migrations/0001_initial.py')"
+    }
+  ],
+  "u7v8w9x_c3": [
+    {
+      "id": "test21",
+      "changeId": "u7v8w9x_c3",
+      "testType": "unit",
+      "framework": "pytest",
+      "description": "Checkout view redirects to payment process",
+      "testCode": "from django.urls import reverse\n\ndef test_checkout_redirects(client):\n    response = client.post('/orders/checkout/')\n    assert response.status_code == 302\n    assert 'payments/process' in response.url"
     }
   ]
 }

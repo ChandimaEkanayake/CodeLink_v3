@@ -1,22 +1,164 @@
 {
   "a1b2c3d_c1": [
     {
-      "id": "impact1",
+      "id": "a1b2c3d_c1_i1",
       "changeId": "a1b2c3d_c1",
       "impactedFilePath": "deployment/deploy.sh",
-      "impactedCode": "#!/bin/bash\n# Deployment script for PyShop\n\n# Check if .env file exists\nif [ ! -f .env ]; then\n  echo \"Error: .env file not found. Please create one based on .env.example\"\n  exit 1\nfi\n\n# Load environment variables\nsource .env\n\n# Install dependencies\necho \"Installing dependencies...\"\npip install -r requirements.txt\n\n# Run migrations\necho \"Running database migrations...\"\npython manage.py migrate\n\n# Collect static files\necho \"Collecting static files...\"\npython manage.py collectstatic --noinput\n\n# Restart Gunicorn\necho \"Restarting Gunicorn...\"\nsystemctl restart gunicorn\n\n# Reload Nginx\necho \"Reloading Nginx configuration...\"\nnginx -t && systemctl reload nginx\n\necho \"Deployment completed successfully!\"",
-      "description": "The deployment script needs to be updated to align with the new deployment instructions in the README. Without these changes, the automated deployment process won't check for environment variables or properly set up the static files as described in the documentation.",
+      "impactedCode": "#!/bin/bash\n# Deployment script for PyShop\n...\necho \"Deployment completed successfully!\"",
+      "description": "The deployment script must be updated to match the enhanced deployment steps in the README. If unchanged, environment setup could break automation.",
+      "severity": "medium"
+    },
+    {
+      "id": "a1b2c3d_c1_i2",
+      "changeId": "a1b2c3d_c1",
+      "impactedFilePath": "docs/deployment.md",
+      "impactedCode": "## Deployment Instructions\n...",
+      "description": "The deployment documentation should reflect the updated README to ensure consistency and reduce onboarding errors.",
+      "severity": "low"
+    }
+  ],
+  "a1b2c3d_c2": [
+    {
+      "id": "a1b2c3d_c2_i1",
+      "changeId": "a1b2c3d_c2",
+      "impactedFilePath": "pyshop/settings.py",
+      "impactedCode": "STATIC_URL = '/static/'\nSTATIC_ROOT = os.path.join(BASE_DIR, 'static/')",
+      "description": "Static and media root paths must be correctly defined to allow the Nginx config to serve them.",
+      "severity": "medium"
+    },
+    {
+      "id": "a1b2c3d_c2_i2",
+      "changeId": "a1b2c3d_c2",
+      "impactedFilePath": "deployment/README.md",
+      "impactedCode": "## Nginx Configuration\n...",
+      "description": "Supporting documentation should explain the new Nginx config and its role in routing requests.",
+      "severity": "low"
+    }
+  ],
+  "e4f5g6h_c1": [
+    {
+      "id": "e4f5g6h_c1_i1",
+      "changeId": "e4f5g6h_c1",
+      "impactedFilePath": "pyshop/products/views.py",
+      "impactedCode": "products = Product.objects.filter(name__icontains=query)",
+      "description": "View logic change to handle pagination with filters can affect how many items are shown per page.",
+      "severity": "low"
+    },
+    {
+      "id": "e4f5g6h_c1_i2",
+      "changeId": "e4f5g6h_c1",
+      "impactedFilePath": "pyshop/templates/product/list.html",
+      "impactedCode": "{% for product in products %} ... {% endfor %}",
+      "description": "Template must accommodate changes in filtered data and pagination structure.",
+      "severity": "low"
+    }
+  ],
+  "z1y2x3w_c1": [
+    {
+      "id": "z1y2x3w_c1_i1",
+      "changeId": "z1y2x3w_c1",
+      "impactedFilePath": "pyshop/cart/views.py",
+      "impactedCode": "request.session.modified = True",
+      "description": "Ensures that cart updates persist across user sessions. Failure to do so may result in data loss.",
+      "severity": "medium"
+    },
+    {
+      "id": "z1y2x3w_c1_i2",
+      "changeId": "z1y2x3w_c1",
+      "impactedFilePath": "tests/cart/test_session.py",
+      "impactedCode": "assert request.session.get('cart') is not None",
+      "description": "New tests are required to validate session persistence of cart data after changes.",
+      "severity": "low"
+    }
+  ],
+  "i7j8k9l_c1": [
+    {
+      "id": "i7j8k9l_c1_i1",
+      "changeId": "i7j8k9l_c1",
+      "impactedFilePath": "manage.py",
+      "impactedCode": "if __name__ == \"__main__\": execute_from_command_line(sys.argv)",
+      "description": "Core entry point must load project correctly for management commands and development server.",
+      "severity": "high"
+    },
+    {
+      "id": "i7j8k9l_c1_i2",
+      "changeId": "i7j8k9l_c1",
+      "impactedFilePath": "README.md",
+      "impactedCode": "## Running Locally\n...",
+      "description": "Documentation should include instructions on how to run the new Django project setup locally.",
+      "severity": "low"
+    }
+  ],
+  "m1n2o3p_c1": [
+    {
+      "id": "m1n2o3p_c1_i1",
+      "changeId": "m1n2o3p_c1",
+      "impactedFilePath": "pyshop/payments/views.py",
+      "impactedCode": "def stripe_webhook(request): ...",
+      "description": "Webhook logic must parse, validate, and respond to Stripe events reliably.",
+      "severity": "high"
+    },
+    {
+      "id": "m1n2o3p_c1_i2",
+      "changeId": "m1n2o3p_c1",
+      "impactedFilePath": "pyshop/payments/tests/test_webhooks.py",
+      "impactedCode": "def test_stripe_webhook_signature(): ...",
+      "description": "Unit tests must be updated to cover webhook validation and error responses.",
       "severity": "medium"
     }
   ],
   "q4r5s6t_c1": [
     {
-      "id": "impact3",
+      "id": "q4r5s6t_c1_i1",
       "changeId": "q4r5s6t_c1",
       "impactedFilePath": "pyshop/orders/models.py",
-      "impactedCode": "from django.db import models\nfrom django.conf import settings\nfrom products.models import Product\nfrom decimal import Decimal\n\nclass Order(models.Model):\n    user = models.ForeignKey(settings.AUTH_USER_MODEL,\n                             related_name='orders',\n                             on_delete=models.CASCADE,\n                             null=True, blank=True)\n    first_name = models.CharField(max_length=50)\n    last_name = models.CharField(max_length=50)\n    email = models.EmailField()\n    address = models.CharField(max_length=250)\n    postal_code = models.CharField(max_length=20)\n    city = models.CharField(max_length=100)\n    created = models.DateTimeField(auto_now_add=True)\n    updated = models.DateTimeField(auto_now=True)\n    paid = models.BooleanField(default=False)\n    \n    class Meta:\n        ordering = ('-created',)\n    \n    def __str__(self):\n        return f'Order {self.id}'\n    \n    def get_total_cost(self):\n        return sum(item.get_cost() for item in self.items.all())\n    \n    def mark_as_paid(self):\n        self.paid = True\n        self.save()\n\n\nclass OrderItem(models.Model):\n    order = models.ForeignKey(Order,\n                             related_name='items',\n                             on_delete=models.CASCADE)\n    product = models.ForeignKey(Product,\n                               related_name='order_items',\n                               on_delete=models.CASCADE)\n    price = models.DecimalField(max_digits=10, decimal_places=2)\n    quantity = models.PositiveIntegerField(default=1)\n    \n    def __str__(self):\n        return str(self.id)\n    \n    def get_cost(self):\n        return self.price * self.quantity",
-      "description": "The Order model needs to be updated to work with the new payment processing system. The current model only has a simple 'paid' flag, but now needs to track payment status and potentially store payment IDs for reference.",
+      "impactedCode": "def mark_as_paid(self): ...",
+      "description": "Order models must be enhanced to track payment status beyond a simple boolean.",
       "severity": "high"
+    },
+    {
+      "id": "q4r5s6t_c1_i2",
+      "changeId": "q4r5s6t_c1",
+      "impactedFilePath": "pyshop/orders/tests/test_payment_flow.py",
+      "impactedCode": "def test_order_payment_status_update(): ...",
+      "description": "Unit tests are needed to confirm that Stripe webhook updates the order status as expected.",
+      "severity": "medium"
+    }
+  ],
+  "q4r5s6t_c2": [
+    {
+      "id": "q4r5s6t_c2_i1",
+      "changeId": "q4r5s6t_c2",
+      "impactedFilePath": "pyshop/templates/payments/process.html",
+      "impactedCode": "<script src=\"https://js.stripe.com/v3/\"></script>",
+      "description": "Frontend form for credit card entry must properly load and configure Stripe Elements.",
+      "severity": "high"
+    },
+    {
+      "id": "q4r5s6t_c2_i2",
+      "changeId": "q4r5s6t_c2",
+      "impactedFilePath": "pyshop/static/js/stripe.js",
+      "impactedCode": "stripe.confirmCardPayment(clientSecret, ...)",
+      "description": "Client-side script must match the Stripe payment flow introduced in backend.",
+      "severity": "high"
+    }
+  ],
+  "u7v8w9x_c1": [
+    {
+      "id": "u7v8w9x_c1_i1",
+      "changeId": "u7v8w9x_c1",
+      "impactedFilePath": "pyshop/payments/models.py",
+      "impactedCode": "class Payment(models.Model): ...",
+      "description": "Introduces a new model to store Stripe payment metadata. Must link to Order.",
+      "severity": "high"
+    },
+    {
+      "id": "u7v8w9x_c1_i2",
+      "changeId": "u7v8w9x_c1",
+      "impactedFilePath": "pyshop/orders/views.py",
+      "impactedCode": "redirect('payments:process')",
+      "description": "Order views must trigger redirection to the payment flow post-order creation.",
+      "severity": "medium"
     }
   ]
 }
